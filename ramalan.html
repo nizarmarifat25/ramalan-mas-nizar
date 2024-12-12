@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramalan Mas Nizar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Animasi Fade In Up untuk judul */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animasi Fade In untuk hasil ramalan */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle, #1a237e, #0d47a1, #283593);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            max-width: 400px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        input[type="text"]::placeholder {
+            color: #cccccc;
+        }
+
+        button {
+            background: linear-gradient(90deg, #ff6f00, #ff8f00);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            animation: fadeIn 1s ease-out;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #ff8f00, #ff6f00);
+            transform: scale(1.05);
+        }
+
+        #loading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        #hasil {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 30px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            input[type="text"] {
+                font-size: 0.9rem;
+            }
+
+            button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Gue ramalin apa yang bakal <br> terjadi di tahun depan</h1>
+        <input type="text" id="nama" placeholder="Siapa nama lo">
+        <button onclick="ramal()">Ramal!</button>
+        <div id="loading" style="display: none;">Sabar gue lagi ramal lo...</div>
+        <div id="hasil"></div>
+    </div>
+
+    <script>
+        const ramalan = [
+            "Tahun 2025, siap-siap jadi pusat perhatian, bro! Semua mata bakal ke lo!",
+            "Lo bakal ke luar negeri, tapi bukan karena kerja, tapi karena liburan mantul!",
+            "Cinta datang dari arah yang nggak lo sangka, siap-siap baper berat!",
+            "Kerja lo bakal naik level, tapi lo nggak bakal ngubah gaya hidup lo kok, santai aja!",
+            "Kesehatan? Lo bakal tetep sehat, cuma hati-hati kebanyakan makan junk food, ya!",
+            "Ada surprise yang bakal bikin lo terkejut, tapi tenang aja, bukan masalah besar kok!",
+            "Lo bakal kenalan sama orang baru yang bikin hidup lo makin seru, tapi hati-hati, jangan baper dulu!",
+            "Keuangan makin cuan, tapi jangan kebanyakan beli barang yang nggak penting ya!",
+            "Kreativitas lo bakal naik gila-gilaan, siap-siap jadi inspirasi banyak orang!",
+            "2025 bakal jadi tahun lo untuk ngejar mimpi-mimpi gila, jangan takut gagal, bro!",
+            "Tapi hati-hati, dompet lo bakal sering kebobolan karena belanja online terus!",
+            "Drama-drama kecil pasti ada, tapi lo bisa kelarin itu semua dengan santai, bawa bekal popcorn aja!",
+            "Perasaan lo bakal campur aduk, tapi lo tau kok gimana cara ngatasinnya, jangan overthinking!",
+            "Lo bakal ngerasa target yang lo set mungkin nggak tercapai, tapi yang penting tetap semangat, bro!",
+            "Ada orang ngeselin yang bakal bikin lo kesel, tapi lo bakal bisa hadapin dengan gaya lo yang cool!",
+            "Tahun ini, lo bakal ngerasain apa itu cinta yang datang dengan cara yang nggak lo duga.",
+            "Ada kemungkinan lo ketemu seseorang yang bisa bikin lo lupa waktu, hati-hati bisa jadi baper.",
+            "Tunggu kejutan di kehidupan cintamu, bisa jadi ada perubahan yang bakal bikin lo lebih serius.",
+            "Seseorang dari masa lalu bakal nyariin lo lagi, pertanyaannya: lo bakal bales atau nggak?",
+            "2025, lo bakal punya kesempatan buat lebih membuka hati, mungkin lo akan ketemu orang yang tepat.",
+            "Lo bakal ngerasain apa yang disebut cinta yang tulus, hati-hati jangan sampai salah langkah.",
+            "Ada seseorang yang bakal buat lo jatuh cinta dari pandangan pertama, tapi jangan terburu-buru.",
+            "Tahun 2025 bakal jadi tahun lo buat memperbaiki hubungan yang sedikit renggang, lo bakal dapet banyak kebahagiaan.",
+            "Lo bakal punya peluang buat rekonsiliasi sama seseorang yang sempat hilang, jangan sia-siakan kesempatan ini.",
+            "Bersiaplah menghadapi hubungan yang penuh dengan tantangan, tapi lo bakal dapet pelajaran berharga dari sana.",
+            "Di tahun 2025, lo bakal banyak ngerasain momen romantis, tapi jangan terlalu berharap, nikmatin aja dulu.",
+            "Keuangan lo bakal lebih stabil, tapi jangan lupa untuk menabung dan mengelola uang dengan bijak.",
+            "Ada kemungkinan lo bakal dapet promosi kerja atau peluang karir yang lebih baik, siap-siap jadi boss baru!",
+            "Lo bakal jadi lebih mandiri di tahun 2025, belajar untuk mengejar impian dengan lebih percaya diri.",
+            "Sabar ya, karena ada beberapa hal yang harus lo tunggu, tapi semua itu bakal berbuah manis nantinya.",
+            "Lo bakal dapet kesempatan besar buat traveling, bisa jadi lo pergi ke tempat yang belum pernah lo bayangkan.",
+            "Tahun 2025 bakal jadi tahun yang penuh dengan kebahagiaan, lo bakal menemukan kedamaian dalam hidup.",
+            "Ada kemungkinan lo bakal terlibat dalam sebuah proyek besar yang bakal mengubah hidup lo.",
+            "Cinta yang datang di 2025 mungkin akan membuat lo merasa lebih hidup dan lebih semangat setiap hari.",
+            "Tahun ini, lo bakal lebih fokus pada diri sendiri dan mengejar kebahagiaan pribadi, tanpa beban.",
+            "Keluarga lo bakal jadi sumber kebahagiaan terbesar, lo bakal lebih sering berkumpul dan berbagi waktu bersama mereka.",
+            "Ada kemungkinan lo akan bertemu dengan seseorang yang punya pemikiran yang sama dengan lo, chemistry-nya langsung nyambung.",
+            "Tahun 2025, lo bakal dapet banyak kejutan manis, nggak cuma dari orang-orang sekitar, tapi juga dari diri lo sendiri.",
+            "Lo bakal ngelakuin perubahan besar dalam hidup lo, siap-siap jadi versi terbaik dari diri lo sendiri!",
+            "Akan ada banyak peluang baru yang muncul di depan lo, jangan takut untuk melangkah.",
+            "Tahun ini lo bakal lebih percaya diri dalam urusan percintaan, siap-siap buat hubungan yang lebih serius.",
+            "Lo bakal banyak belajar tentang arti kesabaran, terutama dalam hubungan asmara.",
+            "Tahun 2025 adalah waktu yang tepat buat lo untuk menyelesaikan masalah pribadi dan mulai hidup lebih bahagia.",
+            "Akan ada satu momen penting dalam hidup lo yang bakal membuka mata lo tentang arti sejati dari cinta."
+        ];
+
+
+
+
+
+        function ramal() {
+            const nama = document.getElementById("nama").value;
+            const loading = document.getElementById("loading");
+            const hasil = document.getElementById("hasil");
+
+            // Validasi input
+            if (nama === "") {
+                alert("Silakan masukkan nama Anda.");
+                return;
+            }
+
+            loading.style.display = "block";
+            hasil.textContent = "";
+
+            // Simulasi loading
+            setTimeout(() => {
+                const randomRamalan = ramalan[Math.floor(Math.random() * ramalan.length)];
+                hasil.innerHTML = `<strong>${nama}</strong>!<br>Gue udah cek ramalan buat lo, nih...<br>${randomRamalan}`;
+                loading.style.display = "none";
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>
