@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gue Ramalin Lo</title>
+    <link rel="icon" href="https://w7.pngwing.com/pngs/222/215/png-transparent-witch-magic-ball-for-divination-crystal-ball-thumbnail.png" type="image/x-icon">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         /* Animasi Fade In Up untuk judul */
         @keyframes fadeInUp {
@@ -35,6 +39,9 @@
             margin: 0;
             font-family: 'Poppins', sans-serif;
             background: radial-gradient(circle, #1a237e, #0d47a1, #283593);
+        }
+
+        .wrapper {
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -45,10 +52,8 @@
 
         .container {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(15px);
             animation: fadeInUp 1s ease-out;
         }
@@ -128,12 +133,14 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Gue ramalin apa yang bakal <br> terjadi sama lo di tahun depan</h1>
-        <input type="text" id="nama" placeholder="Siapa nama lo">
-        <button onclick="ramal()">Ramal!</button>
-        <div id="loading" style="display: none;">Sabar gue lagi ramal lo...</div>
-        <div id="hasil"></div>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Gue ramalin apa yang bakal <br> terjadi sama lo di tahun depan</h1>
+            <input type="text" id="nama" placeholder="Siapa nama lo">
+            <button onclick="ramal()">Ramal!</button>
+            <div id="loading" style="display: none;">Sabar gue lagi ramal lo...</div>
+            <div id="hasil"></div>
+        </div>
     </div>
 
     <script>
@@ -208,23 +215,40 @@
 
 
 
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash |= 0;
+            }
+            return hash;
+        }
+
         function ramal() {
             const nama = document.getElementById("nama").value;
             const loading = document.getElementById("loading");
             const hasil = document.getElementById("hasil");
 
-            // Validasi input
             if (nama === "") {
-                alert("Silakan masukkan nama Anda.");
-                return;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gimana si..',
+                    text: 'Nama lo isi dulu ege !',
+                    confirmButtonText: 'Tutup'
+                });
+
+                return
             }
 
             loading.style.display = "block";
             hasil.textContent = "";
 
-            // Simulasi loading
             setTimeout(() => {
-                const randomRamalan = ramalan[Math.floor(Math.random() * ramalan.length)];
+                const hashValue = hashString(nama.toLowerCase());
+
+                const randomRamalan = ramalan[Math.abs(hashValue) % ramalan.length];
+
                 hasil.innerHTML = `<strong>${nama}</strong>!<br>Gue udah cek ramalan buat lo, nih...<br>${randomRamalan}`;
                 loading.style.display = "none";
             }, 2000);
